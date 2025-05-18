@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8" />
+    <title>Botanikus Kert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(#d2f8d2, #ffffff);
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: green;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+
+        .shop, .garden {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flower, .seed {
+            border: 2px solid #6b8e23;
+            border-radius: 10px;
+            padding: 15px;
+            width: calc(50% - 10px);
+            max-width: 200px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        img {
+            width: 80px;
+            height: 80px;
+            transition: transform 0.3s;
+        }
+
+        .button {
+            margin-top: 6px;
+            padding: 6px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 3px;
+            font-size: 0.9em;
+        }
+
+            .button:hover {
+                background-color: #45a049;
+            }
+
+        .growth, .health {
+            margin-top: 4px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(#1a1a1a, #333);
+            color: #eee;
+        }
+
+            body.dark-mode .flower,
+            body.dark-mode .seed {
+                background-color: #222;
+                border-color: #555;
+                box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            }
+
+            body.dark-mode .button {
+                background-color: #8b0000;
+            }
+
+                body.dark-mode .button:hover {
+                    background-color: #a30000;
+                }
+
+        @media (max-width: 768px) {
+            .flower, .seed {
+                width: calc(100% - 10px);
+            }
+
+            .shop, .garden {
+                padding: 0 10px;
+            }
+
+            h1 {
+                font-size: 1.7em;
+            }
+
+            .stats {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .button {
+                font-size: 0.8em;
+                padding: 5px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 Botanikus Kert 🌼</h1>
+
+    <h2>🛒 Bolt - Vásárolj virágmagokat vagy trágyát!</h2>
+    <div class="shop" id="shop"></div>
+
+    <h2>🌼 A kerted</h2>
+    <div class="garden" id="garden"></div>
+    <button class="button" onclick="toggleDarkMode()">🌙 Sötét mód be/ki</button>
+
+    <div class="stats">
+        Szint: <span id="level">1</span> | Tapasztalat (XP): <span id="xp">0</span>/100 | Pénz: <span id="money">200</span> 💰 | Trágyák: <span id="fertilizers">0</span>
+    </div>
+
+    <script>
+        const seeds = [
+            {
+                name: "Rózsa mag",
+                price: 50,
+                stages: {
+                    seed: "https://tse4.mm.bing.net/th?id=OIP.lsSDbJo4sjwFcOokmzOIVwHaE8&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Young_rose_bush.JPG/800px-Young_rose_bush.JPG",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Red_rose.jpg/800px-Red_rose.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Rose_Queen_of_Sweden.jpg/800px-Rose_Queen_of_Sweden.jpg"
+                }
+            },
+            {
+                name: "Tulipán mag",
+                price: 40,
+                stages: {
+                    seed: "https://tse1.mm.bing.net/th?id=OIP.hzDELPNGA1_F0nIDF6gBggHaFX&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Tulip_sprouting.JPG/800px-Tulip_sprouting.JPG",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Tulipa_Tarda_01.jpg/800px-Tulipa_Tarda_01.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Red_Tulip.jpg/800px-Red_Tulip.jpg"
+                }
+            },
+            {
+                name: "Napraforgó mag",
+                price: 30,
+                stages: {
+                    seed: "https://tse3.mm.bing.net/th?id=OIP.CQmAsXK_t906IAD7O53UOgHaFP&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Young_sunflower.JPG/800px-Young_sunflower.JPG",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Sonnenblume_in_Bornheim.jpg/800px-Sonnenblume_in_Bornheim.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Sunflower_from_Silesia2.jpg/800px-Sunflower_from_Silesia2.jpg"
+                }
+            },
+            {
+                name: "Orchidea mag",
+                price: 60,
+                stages: {
+                    seed: "https://tse1.mm.bing.net/th?id=OIP.V9SYVKYztFHDR6y2yKF72wHaFc&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Young_orchid_plant.jpg/800px-Young_orchid_plant.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Phalaenopsis_amabilis_var_rimestadiana_Blanco_01.JPG/800px-Phalaenopsis_amabilis_var_rimestadiana_Blanco_01.JPG",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Phalaenopsis_bellina_%28Rchb.f.%29_Christenson.jpg/800px-Phalaenopsis_bellina_%28Rchb.f.%29_Christenson.jpg"
+                }
+            },
+            {
+                name: "Kála mag",
+                price: 45,
+                stages: {
+                    seed: "https://tse3.mm.bing.net/th?id=OIP.MuSvIE58UNx9y78TNrTlZgHaFt&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Young_zucchini_plant.JPG/800px-Young_zucchini_plant.JPG",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Zucchini_flower_and_young_fruit.jpg/800px-Zucchini_flower_and_young_fruit.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Zucchini_on_plant.jpg/800px-Zucchini_on_plant.jpg"
+                }
+            },
+            {
+                name: "Liliom mag",
+                price: 55,
+                stages: {
+                    seed: "https://tse4.mm.bing.net/th?id=OIP.SCbCcl2e4kLd9MYm9M1eYQHaG-&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Young_lily_plant.jpg/800px-Young_lily_plant.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Lilium_bulbiferum_var_croceum_LC01.jpg/800px-Lilium_bulbiferum_var_croceum_LC01.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Lilium_candidum_kz01.jpg/800px-Lilium_candidum_kz01.jpg"
+                }
+            },
+        ];
+
+        const illegalSeeds = [
+            {
+                name: "Lila pampafű mag",
+                price: 100,
+                stages: {
+                    seed: "https://tse1.mm.bing.net/th?id=OIP.V3r-g0WTc0ysl4nUz_LMQgHaHa&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Datura_stramonium_plant.jpg/800px-Datura_stramonium_plant.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Papaver_somniferum_Blauer_Mohn.JPG/800px-Papaver_somniferum_Blauer_Mohn.JPG",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Cannabis_flower_macro.JPG/800px-Cannabis_flower_macro.JPG"
+                }
+            },
+            {
+                name: "Japán komló mag",
+                price: 115,
+                stages: {
+                    seed: "https://tse4.mm.bing.net/th?id=OIP._sEvIJoh_jjPB-VKnVMVXQHaE7&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Atropa_belladonna_kz01.jpg/800px-Atropa_belladonna_kz01.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hyoscyamus_niger_plant.jpg/800px-Hyoscyamus_niger_plant.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Digitalis_purpurea_kz1.jpg/800px-Digitalis_purpurea_kz1.jpg"
+                }
+            },
+            {
+                name: "Dohány mag",
+                price: 120,
+                stages: {
+                    seed: "https://tse4.mm.bing.net/th?id=OIP.bJCN08EQWMstgbI84G7TvgHaDo&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Atropa_belladonna_kz01.jpg/800px-Atropa_belladonna_kz01.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hyoscyamus_niger_plant.jpg/800px-Hyoscyamus_niger_plant.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Digitalis_purpurea_kz1.jpg/800px-Digitalis_purpurea_kz1.jpg"
+                }
+            },
+            {
+                name: "Marihuána mag",
+                price: 150,
+                stages: {
+                    seed: "https://tse1.mm.bing.net/th?id=OIP.23aU3hCQV_7CwWZm0zFEVQHaFa&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Atropa_belladonna_kz01.jpg/800px-Atropa_belladonna_kz01.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hyoscyamus_niger_plant.jpg/800px-Hyoscyamus_niger_plant.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Digitalis_purpurea_kz1.jpg/800px-Digitalis_purpurea_kz1.jpg"
+                }
+            },
+            {
+                name: "Varázsgomba mag",
+                price: 110,
+                stages: {
+                    seed: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Psilocybe_allenii_62599.jpg/330px-Psilocybe_allenii_62599.jpg",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Atropa_belladonna_kz01.jpg/800px-Atropa_belladonna_kz01.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hyoscyamus_niger_plant.jpg/800px-Hyoscyamus_niger_plant.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Digitalis_purpurea_kz1.jpg/800px-Digitalis_purpurea_kz1.jpg"
+                }
+            },
+            {
+                name: "Mák mag",
+                price: 100,
+                stages: {
+                    seed: "https://tse3.mm.bing.net/th?id=OIP.BxkCCjzsj1gzLw33AHs9HQHaFX&pid=Api&P=0&h=220",
+                    small: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Atropa_belladonna_kz01.jpg/800px-Atropa_belladonna_kz01.jpg",
+                    medium: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hyoscyamus_niger_plant.jpg/800px-Hyoscyamus_niger_plant.jpg",
+                    big: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Digitalis_purpurea_kz1.jpg/800px-Digitalis_purpurea_kz1.jpg"
+                }
+            }
+        ];
+
+        let flowersLight = [];
+        let flowersDark = [];
+        let xp = 0;
+        let level = 1;
+        let money = 200;
+        let fertilizers = 0;
+        let darkMode = false;
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle("dark-mode", darkMode);
+            renderShop();
+            renderGarden();
+        }
+
+        function renderShop() {
+            const shop = document.getElementById('shop');
+            shop.innerHTML = '';
+
+            let currentSeeds;
+            if (darkMode) {
+                currentSeeds = [...illegalSeeds];
+            } else {
+                currentSeeds = seeds;
+            }
+
+            currentSeeds.forEach((seed, index) => {
+                const seedDiv = document.createElement('div');
+                seedDiv.className = 'seed';
+                seedDiv.innerHTML = `
+                                    <h3>${seed.name}</h3>
+                                    <img src="${seed.stages.seed}" alt="${seed.name} mag kép">
+                                    <div>Ár: ${seed.price} 💰</div>
+                                    <button class="button" onclick="buySeedByData(${index}, ${darkMode})">Vásárlás</button>
+                                `;
+                shop.appendChild(seedDiv);
+            });
+
+            const fertilizerDiv = document.createElement('div');
+            fertilizerDiv.className = 'seed';
+            fertilizerDiv.innerHTML = `
+                            <h3>Trágya</h3>
+                            <img src="https://tse2.mm.bing.net/th?id=OIP.AfkHcNX7Qzc6FMrLEv1HYQAAAA&pid=Api&P=0&h=220" alt="Trágya">
+                            <div>Ár: 15 💰</div>
+                            <button class="button" onclick="buyFertilizer()">Vásárlás</button>
+                            `;
+            shop.appendChild(fertilizerDiv);
+        }
+
+        function renderGarden() {
+            const garden = document.getElementById('garden');
+            garden.innerHTML = '';
+
+            let currentFlowers = darkMode ? flowersDark : flowersLight;
+
+            let aliveFlowers = currentFlowers.filter(flower => flower.alive);
+
+            if (darkMode) {
+                flowersDark = aliveFlowers;
+                currentFlowers = flowersDark;
+            } else {
+                flowersLight = aliveFlowers;
+                currentFlowers = flowersLight;
+            }
+
+            currentFlowers.forEach((flower, index) => {
+                const flowerDiv = document.createElement('div');
+                flowerDiv.className = 'flower';
+                flowerDiv.innerHTML = `
+                                    <h3>${flower.name}</h3>
+                                    <img src="${flower.img}" alt="${flower.name}">
+                                    <div class="growth">Növekedés: ${flower.growth}%</div>
+                                    <div class="health">Egészség: ${flower.health}%</div>
+                                    <button class="button" onclick="waterFlower(${index})">💧 Locsolás</button>
+                                    <button class="button" onclick="fertilizeFlower(${index})">🌿 Trágyázás</button>
+                                    <button class="button" onclick="sellFlower(${index})">💰 Eladás</button>
+                                `;
+                garden.appendChild(flowerDiv);
+            });
+        }
+
+        function buySeedByData(index, isDark) {
+            let seed;
+            if (isDark) {
+                if (index === 0) {
+                    seed = illegalSeeds[0]; 
+                } else {
+                    seed = illegalSeeds[index - 0];
+                }
+            } else {
+                seed = seeds[index];
+            }
+
+            if (money >= seed.price) {
+                money -= seed.price;
+                updateStats();
+
+                const flowerData = {
+                    name: seed.name.replace(' mag', ''),
+                    growth: 0,
+                    health: 100,
+                    img: seed.stages.seed,
+                    alive: true,
+                    lastWatered: 0,
+                    lastFertilized: 0,
+                };
+
+                if (isDark) {
+                    flowersDark.push(flowerData);
+                } else {
+                    flowersLight.push(flowerData);
+                }
+                renderGarden();
+                updateStats();
+            } else {
+                alert("Nincs elég pénzed ehhez a maghoz! 😥");
+            }
+        }
+
+       
+        function buyFertilizer() {
+            if (money >= 15) {
+                money -= 15;
+                fertilizers++;
+                updateStats(); 
+            } else {
+                alert("Nincs elég pénzed trágyára! 😥");
+            }
+        }
+
+        function waterFlower(index) {
+            const now = Date.now();
+            let flower = darkMode ? flowersDark[index] : flowersLight[index];
+            if (!flower.alive) return alert("Ez a virág elhervadt. 🌑");
+            if (now - flower.lastWatered < 3000) return alert("Várnod kell még egy kicsit locsolás előtt! ⏳");
+            flower.lastWatered = now;
+            flower.growth = Math.min(flower.growth + 10, 100);
+            flower.health = Math.min(flower.health + 5, 100);
+            xp += 5;
+            checkLevelUp();
+            renderGarden();
+        }
+
+        function fertilizeFlower(index) {
+            const now = Date.now();
+            let flower = darkMode ? flowersDark[index] : flowersLight[index];
+            if (!flower.alive) return alert("Ez a virág elhervadt. 🌑");
+            if (now - flower.lastFertilized < 3000) return alert("Várnod kell még egy kicsit trágyázás előtt! ⏳");
+            if (fertilizers > 0) {
+                fertilizers--;
+                flower.lastFertilized = now;
+                flower.growth = Math.min(flower.growth + 15, 100);
+                flower.health = Math.min(flower.health + 20, 100);
+                xp += 10;
+                checkLevelUp();
+                renderGarden();
+                updateStats();
+            } else {
+                alert("Nincs trágyád! Vásárolj a boltban!");
+            }
+        }
+
+        function sellFlower(index) {
+            let currentFlowers = darkMode ? flowersDark : flowersLight;
+            const flower = currentFlowers[index];
+            if (!flower.alive) {
+                alert(`${flower.name} elhervadt, nem tudod eladni. 😢`);
+                currentFlowers.splice(index, 1);
+                renderGarden();
+                return;
+            }
+            if (flower.growth >= 50) {
+                let price;
+               
+                if (darkMode && (flower.name.includes("Titkos virág") || flower.name.includes("Árnyvirág") || flower.name.includes("Dohány") || flower.name.includes("Marihuána") || flower.name.includes("Parlagfű") || flower.name.includes("Jóslófű"))) {
+                    price = 320; 
+                } else {
+                    const basePrice = flower.growth + flower.health / 2;
+                    price = Math.floor(basePrice * (flower.health / 100)); 
+                }
+                money += price;
+                alert(`Eladtad a ${flower.name} virágot ${price} 💰 értékben!`);
+                currentFlowers.splice(index, 1);
+                renderGarden();
+                updateStats();
+            } else {
+                alert(`${flower.name} még nem elég fejlett az eladáshoz! 🌱`);
+            }
+        }
+
+        function checkLevelUp() {
+            if (xp >= 100) {
+                xp -= 100;
+                level++;
+                alert(`🎉 Gratulálok! Elérted a ${level}. szintet!`);
+                updateStats();
+            }
+        }
+
+        setInterval(() => {
+            
+            [flowersLight, flowersDark].forEach(flowerArray => {
+                flowerArray.forEach(flower => {
+                    if (flower.alive) {
+                        flower.health -= 5;
+                        if (flower.health <= 0) {
+                            flower.health = 0;
+                            flower.growth = Math.max(flower.growth - 10, 0);
+                            flower.alive = false;
+                        }
+                    }
+                });
+            });
+            renderGarden();
+        }, 10000);
+
+        function updateStats() {
+            document.getElementById('xp').textContent = xp;
+            document.getElementById('level').textContent = level;
+            document.getElementById('money').textContent = money;
+            document.getElementById('fertilizers').textContent = fertilizers;
+        }
+
+        renderShop();
+        renderGarden();
+        updateStats();
+    </script>
+</body>
+</html>
