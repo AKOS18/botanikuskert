@@ -1,137 +1,227 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8" />
-    <title>Botanikus Kert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virágfarm</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(#d2f8d2, #ffffff);
-            text-align: center;
-            padding: 20px;
-            margin: 0;
+            margin: 20px;
+            background-color: #F5F5DC;
+            color: #4B3621;
+            transition: background-color 0.5s, color 0.5s;
         }
+
+            body.dark-mode {
+                background-color: #2F4F4F;
+                color: #E0FFFF;
+            }
 
         h1 {
-            color: green;
-            font-size: 2em;
+            text-align: center;
+            color: #8B4513;
+        }
+
+        body.dark-mode h1 {
+            color: #BDB76B;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #8B4513;
+            margin-top: 30px;
             margin-bottom: 15px;
+            font-size: 1.8em;
         }
 
-        .stats {
-            margin: 15px 0;
-            font-size: 1.1em;
+        body.dark-mode .section-title {
+            color: #BDB76B;
         }
 
-        .shop, .garden {
-            margin-top: 20px;
+        #stats {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            background-color: #E0E0D2;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode #stats {
+            background-color: #4F7F7F;
+        }
+
+        #game-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
             flex-wrap: wrap;
-            gap: 15px;
         }
 
-        .flower, .seed {
-            border: 2px solid #6b8e23;
-            border-radius: 10px;
-            padding: 15px;
-            width: calc(50% - 10px);
-            max-width: 200px;
-            background-color: #ffffff;
+        #shop-container, #garden-container {
+            flex: 1;
+            min-width: 320px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+            position: relative;
         }
 
-        img {
-            width: 80px;
-            height: 80px;
-            transition: transform 0.3s;
+        body.dark-mode #shop-container, body.dark-mode #garden-container {
+            background-color: #3A5F5F;
+        }
+
+        #shop-content, #garden-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        .seed, .flower {
+            border: 1px solid #D2B48C;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            background-color: #F9F9F9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex: 0 0 calc(33.33% - 10px);
+            max-width: calc(33.33% - 10px);
+            box-sizing: border-box;
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .seed, body.dark-mode .flower {
+            background-color: #4A7676;
+            border-color: #5F9EA0;
+        }
+
+        .seed img, .flower img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .seed h3, .flower h3 {
+            font-size: 1em;
+            margin-top: 0;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .button {
-            margin-top: 6px;
-            padding: 6px 10px;
-            background-color: #4CAF50;
+            background-color: #8B4513;
             color: white;
+            padding: 5px 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-right: 3px;
-            font-size: 0.9em;
+            font-size: 0.75em;
+            margin-top: 8px;
+            width: 90%;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
         }
 
-        .button:hover {
-            background-color: #45a049;
+            .button:hover:not(.disabled) {
+                background-color: #A0522D;
+            }
+
+            .button:active:not(.disabled) {
+                background-color: #7B3F00;
+            }
+
+        body.dark-mode .button {
+            background-color: #BDB76B;
+            color: #2F4F4F;
+        }
+
+            body.dark-mode .button:hover:not(.disabled) {
+                background-color: #8B7D6B;
+            }
+
+            body.dark-mode .button:active:not(.disabled) {
+                background-color: #6B5B49;
+            }
+
+        .button.disabled {
+            background-color: #CCCCCC;
+            cursor: not-allowed;
+        }
+
+        .flower .button:not(:last-child) {
+            margin-bottom: 5px;
         }
 
         .growth, .health {
-            margin-top: 4px;
-            font-size: 0.9em;
-            color: #555;
+            font-weight: bold;
+            margin: 2px 0;
+            font-size: 0.85em;
         }
 
-        body.dark-mode {
-            background: linear-gradient(#1a1a1a, #333);
-            color: #eee;
+        #darkModeToggle {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
-        body.dark-mode .flower,
-        body.dark-mode .seed {
-            background-color: #222;
-            border-color: #555;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        body.dark-mode .button {
-            background-color: #8b0000;
-        }
-
-        body.dark-mode .button:hover {
-            background-color: #a30000;
-        }
-
-        @media (max-width: 768px) {
-            .flower, .seed {
-                width: calc(100% - 10px);
-            }
-
-            .shop, .garden {
-                padding: 0 10px;
-            }
-
-            h1 {
-                font-size: 1.7em;
-            }
-
-            .stats {
-                font-size: 1em;
+        @media (max-width: 992px) {
+            .seed, .flower {
+                flex: 0 0 calc(50% - 10px);
+                max-width: calc(50% - 10px);
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
+        @media (max-width: 600px) {
+            .seed, .flower {
+                flex: 0 0 calc(100% - 10px);
+                max-width: calc(100% - 10px);
             }
 
-            .button {
-                font-size: 0.8em;
-                padding: 5px 8px;
+            #shop-container, #garden-container {
+                min-width: unset;
+                width: 95%;
             }
         }
     </style>
 </head>
 <body>
-    <h1>🌸 Botanikus Kert 🌼</h1>
+    <h1>Virágfarm</h1>
 
-    <h2>🛒 Bolt - Vásárolj virágmagokat vagy trágyát!</h2>
-    <div class="shop" id="shop"></div>
+    <div id="stats">
+        Pénz: <span id="money">200</span> 💰 |
+        XP: <span id="xp">0</span> |
+        Szint: <span id="level">1</span> |
+        Trágya: <span id="fertilizers">0</span> 🌿
+    </div>
 
-    <h2>🌼 A kerted</h2>
-    <div class="garden" id="garden"></div>
-   <div id="darkModeToggle"></div>
+    <div id="darkModeToggle">
+    </div>
 
-    <div class="stats">
-        Szint: <span id="level">1</span> | Tapasztalat (XP): <span id="xp">0</span>/100 | Pénz: <span id="money">200</span> 💰 | Trágyák: <span id="fertilizers">0</span>
+    <div id="game-container">
+        <div id="shop-container">
+            <h2 class="section-title">Bolt</h2>
+            <div id="shop-content">
+            </div>
+        </div>
+
+        <div id="garden-container">
+            <h2 class="section-title">Kertem</h2>
+            <div id="garden-content">
+            </div>
+        </div>
     </div>
 
     <script>
@@ -139,6 +229,7 @@
             {
                 name: "Rózsa mag",
                 price: 50,
+                minLevel: 1,
                 stages: {
                     seed: "https://tse2.mm.bing.net/th?id=OIP.ypSa6adL9BpCo1iKfP2BvwAAAA&pid=Api&P=0&h=220",
                     small: "https://tse3.mm.bing.net/th?id=OIP.JHZonpzLTG0_xEy4JeWDPQAAAA&pid=Api&P=0&h=220",
@@ -149,6 +240,7 @@
             {
                 name: "Tulipán mag",
                 price: 40,
+                minLevel: 1,
                 stages: {
                     seed: "https://tse3.mm.bing.net/th?id=OIP.rJTHO0RWxyufWxo9ByKMygHaEv&pid=Api&P=0&h=220",
                     small: "https://tse4.mm.bing.net/th?id=OIP.FAMiid_aoXF1ddPY9a0WSgHaHd&pid=Api&P=0&h=220",
@@ -159,6 +251,7 @@
             {
                 name: "Napraforgó mag",
                 price: 30,
+                minLevel: 1,
                 stages: {
                     seed: "https://tse3.mm.bing.net/th?id=OIP.4_qugy1peJktFTAXTACimgAAAA&pid=Api&P=0&h=220",
                     small: "https://tse3.mm.bing.net/th?id=OIP.SfSofiso5DQdVhxC76dnoAHaE8&pid=Api&P=0&h=220",
@@ -169,6 +262,7 @@
             {
                 name: "Orchidea mag",
                 price: 60,
+                minLevel: 2,
                 stages: {
                     seed: "https://tse4.mm.bing.net/th?id=OIP.Pze5K5m4o41A8d2Z-rfVkwHaKb&pid=Api&P=0&h=220",
                     small: "https://tse3.mm.bing.net/th?id=OIP.MTxwLnZ9KOQsArYeMmCimwAAAA&pid=Api&P=0&h=220",
@@ -179,6 +273,7 @@
             {
                 name: "Kála mag",
                 price: 45,
+                minLevel: 3,
                 stages: {
                     seed: "https://tse2.mm.bing.net/th?id=OIP.mzu9x7cjhlXvkG_clQUCZQHaHa&pid=Api&P=0&h=220",
                     small: "https://tse4.mm.bing.net/th?id=OIP.0a9ytbdAu8piP4AWkzklmAHaFj&pid=Api&P=0&h=220",
@@ -189,6 +284,7 @@
             {
                 name: "Liliom mag",
                 price: 55,
+                minLevel: 3,
                 stages: {
                     seed: "https://tse4.mm.bing.net/th?id=OIP.LqVXLZPRxWztuixY-zQMEwHaD4&pid=Api&P=0&h=220",
                     small: "https://tse3.mm.bing.net/th?id=OIP.qJ62B03fjbOD4A8NBATpNQHaE6&pid=Api&P=0&h=220",
@@ -198,10 +294,10 @@
             },
         ];
         const illegalSeeds = [
-           
             {
                 name: "Japán komló mag",
                 price: 115,
+                minLevel: 3,
                 stages: {
                     seed: "https://tse4.mm.bing.net/th?id=OIP.qNs9WKelB-a_vVAF1QTLxAHaHa&pid=Api&P=0&h=220",
                     small: "https://tse3.mm.bing.net/th?id=OIP.zPVRvwsXdfdW639gaZvf2AHaEt&pid=Api&P=0&h=220",
@@ -212,6 +308,7 @@
             {
                 name: "Dohány mag",
                 price: 120,
+                minLevel: 4,
                 stages: {
                     seed: "https://tse4.mm.bing.net/th?id=OIP.qEid3N3Nqq3HGzR8ghcC_QHaKY&pid=Api&P=0&h=220",
                     small: "https://tse2.mm.bing.net/th?id=OIP.PSo1iq1qPgacJGFX_NO6YQHaId&pid=Api&P=0&h=220",
@@ -222,6 +319,7 @@
             {
                 name: "Marihuána mag",
                 price: 150,
+                minLevel: 5,
                 stages: {
                     seed: "https://tse3.mm.bing.net/th?id=OIP.MBnZUShF1m_2LcDuZxxu2gHaHa&pid=Api&P=0&h=220",
                     small: "https://tse1.mm.bing.net/th?id=OIP.ZzO8l96rCfc63--ff300_gHaEL&pid=Api&P=0&h=220",
@@ -232,6 +330,7 @@
             {
                 name: "Varázsgomba mag",
                 price: 110,
+                minLevel: 5,
                 stages: {
                     seed: "https://tse2.mm.bing.net/th?id=OIP.cDUoM093GHJA7Mkc3JgJRAEsBt&pid=Api&P=0&h=220",
                     small: "https://tse4.mm.bing.net/th?id=OIP.Z-clSdAFuWtJGyOpz2TMawHaCe&pid=Api&P=0&h=220",
@@ -242,6 +341,7 @@
             {
                 name: "Mák mag",
                 price: 100,
+                minLevel: 4,
                 stages: {
                     seed: "https://tse1.mm.bing.net/th?id=OIP.65KYSk9ZoXv9HXbBv56TmwHaEE&pid=Api&P=0&h=220",
                     small: "https://tse4.mm.bing.net/th?id=OIP.AHmYfar3REcRQSeTsTVsjAHaE8&pid=Api&P=0&h=220",
@@ -259,79 +359,114 @@
         let money = 200;
         let fertilizers = 0;
         let darkMode = false;
+        let raidChance = 100;
+        let raidPenaltyMin = 50;
+        let raidPenaltyMax = 150;
+
+        function updateStats() {
+            document.getElementById('money').textContent = money;
+            document.getElementById('xp').textContent = xp;
+            document.getElementById('level').textContent = level;
+            document.getElementById('fertilizers').textContent = fertilizers;
+        }
 
         function toggleDarkMode() {
             darkMode = !darkMode;
             document.body.classList.toggle("dark-mode", darkMode);
             renderShop();
             renderGarden();
+            updateStats();
         }
 
         function renderShop() {
-            const shop = document.getElementById('shop');
-            shop.innerHTML = '';
+            const shopContent = document.getElementById('shop-content');
+            shopContent.innerHTML = '';
             const seedList = darkMode ? illegalSeeds : seeds;
 
             seedList.forEach((seed, i) => {
+                const requiredLevel = seed.minLevel || 1;
+                const canBuy = level >= requiredLevel;
+
                 const div = document.createElement('div');
                 div.className = 'seed';
                 div.innerHTML = `
-                    <h3>${seed.name}</h3>
-                    <img src="${seed.stages.seed}" alt="${seed.name}">
-                    <div>Ár: ${seed.price} 💰</div>
-                    <button class="button" onclick="buySeed(${i})">Vásárlás</button>
-                `;
-                shop.appendChild(div);
+                            <h3>${seed.name}</h3>
+                            <img src="${seed.stages.seed}" alt="${seed.name}">
+                            <div>Ár: ${seed.price} 💰</div>
+                            ${canBuy
+                        ? `<button class="button" onclick="buySeed(${i})">Vásárlás</button>`
+                        : `<button class="button disabled" disabled>Szükséges szint: ${requiredLevel} 🔒</button>`
+                    }
+                        `;
+                shopContent.appendChild(div);
             });
 
             const fertDiv = document.createElement('div');
             fertDiv.className = 'seed';
             fertDiv.innerHTML = `
-                <h3>Trágya</h3>
-                <img src="https://tse2.mm.bing.net/th?id=OIP.AfkHcNX7Qzc6FMrLEv1HYQAAAA&pid=Api&P=0&h=220">
-                <div>Ár: 15 💰</div>
-                <button class="button" onclick="buyFertilizer()">Vásárlás</button>
-            `;
-            shop.appendChild(fertDiv);
+                            <h3>Trágya</h3>
+                            <img src="https://tse2.mm.bing.net/th?id=OIP.AfkHcNX7Qzc6FMrLEv1HYQAAAA&pid=Api&P=0&h=220">
+                            <div>Ár: 15 💰</div>
+                            <button class="button" onclick="buyFertilizer()">Vásárlás</button>
+                        `;
+            shopContent.appendChild(fertDiv);
         }
 
         function renderGarden() {
-            const garden = document.getElementById('garden');
-            garden.innerHTML = '';
+            const gardenContent = document.getElementById('garden-content');
+            gardenContent.innerHTML = '';
             const flowers = darkMode ? flowersDark : flowersLight;
+
+            if (flowers.length === 0) {
+                const message = document.createElement('p');
+                message.textContent = darkMode ? "Még nincsenek illegális növényeid. Ültess a boltból!" : "Még nincsenek virágaid. Ültess a boltból!";
+                message.style.textAlign = "center";
+                message.style.marginTop = "20px";
+                message.style.width = "100%";
+                gardenContent.appendChild(message);
+                return;
+            }
 
             flowers.forEach((flower, index) => {
                 const stage = flower.growth < 10 ? 'seed' : flower.growth < 50 ? 'small' : flower.growth < 80 ? 'medium' : 'big';
                 const seedList = darkMode ? illegalSeeds : seeds;
-                const seed = seedList.find(s => s.name.includes(flower.name));
-                const img = seed?.stages[stage] || flower.img;
+                const seed = seedList.find(s => s.name === flower.name + ' mag' || s.name === flower.name);
+                const img = seed?.stages[stage] || "https://via.placeholder.com/70";
 
                 const div = document.createElement('div');
                 div.className = 'flower';
                 div.innerHTML = `
-                    <h3>${flower.name}</h3>
-                    <img src="${img}" alt="${flower.name}">
-                    <div class="growth">Növekedés: ${flower.growth}%</div>
-                    <div class="health">Egészség: ${flower.health}%</div>
-                    <button class="button" onclick="waterFlower(${index})">💧 Locsolás</button>
-                    <button class="button" onclick="fertilizeFlower(${index})">🌿 Trágyázás</button>
-                    <button class="button" onclick="sellFlower(${index})">💰 Eladás</button>
-                `;
-                garden.appendChild(div);
+                            <h3>${flower.name}</h3>
+                            <img src="${img}" alt="${flower.name}">
+                            <div class="growth">Növekedés: ${flower.growth}%</div>
+                            <div class="health">Egészség: ${flower.health}%</div>
+                            <button class="button" onclick="waterFlower(${index})">💧 Locsolás</button>
+                            <button class="button" onclick="fertilizeFlower(${index})">🌿 Trágyázás</button>
+                            <button class="button" onclick="sellFlower(${index})">💰 Eladás</button>
+                        `;
+                gardenContent.appendChild(div);
             });
         }
 
         function buySeed(index) {
             const list = darkMode ? illegalSeeds : seeds;
             const seed = list[index];
+            const requiredLevel = seed.minLevel || 1;
+
+            if (level < requiredLevel) {
+                alert(`Ahhoz, hogy ezt a magot (${seed.name.replace(' mag', '')}) megvásárold, el kell érned a ${requiredLevel}. szintet!`);
+                return;
+            }
+
             if (money >= seed.price) {
                 money -= seed.price;
+                const now = Date.now();
                 const flower = {
                     name: seed.name.replace(' mag', ''),
                     growth: 0,
                     health: 100,
-                    lastWatered: 0,
-                    lastFertilized: 0,
+                    lastWatered: now,
+                    lastFertilized: now,
                 };
                 (darkMode ? flowersDark : flowersLight).push(flower);
                 updateStats();
@@ -356,7 +491,7 @@
             const list = darkMode ? flowersDark : flowersLight;
             const flower = list[index];
             if (now - flower.lastWatered < 3000) {
-                alert("Várj egy kicsit locsolás előtt!");
+                alert("Várj egy kicsit locsolás előtt! (3 másodperc)");
                 return;
             }
             flower.lastWatered = now;
@@ -373,7 +508,7 @@
             const list = darkMode ? flowersDark : flowersLight;
             const flower = list[index];
             if (fertilizers <= 0) return alert("Nincs trágyád!");
-            if (now - flower.lastFertilized < 3000) return alert("Várj trágyázás előtt!");
+            if (now - flower.lastFertilized < 3000) return alert("Várj trágyázás előtt! (3 másodperc)");
             flower.lastFertilized = now;
             fertilizers--;
             flower.growth = Math.min(100, flower.growth + 20);
@@ -383,25 +518,49 @@
             updateStats();
             renderGarden();
         }
+
         function renderDarkModeButton() {
-    const toggleDiv = document.getElementById('darkModeToggle');
-    if (level >= darkModeUnlockLevel) {
-        toggleDiv.innerHTML = `<button class="button" onclick="toggleDarkMode()">🌙 Sötét mód be/ki</button>`;
-    } else {
-        toggleDiv.innerHTML = `<div style="color: gray;">🔒 Sötét mód ${darkModeUnlockLevel}. szinttől érhető el</div>`;
-    }
-}
+            const toggleDiv = document.getElementById('darkModeToggle');
+            if (level >= darkModeUnlockLevel) {
+                toggleDiv.innerHTML = `<button class="button" onclick="toggleDarkMode()">🌙 Sötét mód be/ki</button>`;
+            } else {
+                toggleDiv.innerHTML = `<div style="color: gray;">🔒 Sötét mód ${darkModeUnlockLevel}. szinttől érhető el</div>`;
+            }
+        }
 
         function sellFlower(index) {
             const list = darkMode ? flowersDark : flowersLight;
-            const flower = list.splice(index, 1)[0];
-            const price = Math.floor((flower.growth + flower.health) / 2);
-            money += price;
-            xp += 15;
+            const flower = list[index];
+
+            const baseSeed = darkMode
+                ? illegalSeeds.find(s => s.name.includes(flower.name))
+                : seeds.find(s => s.name.includes(flower.name));
+
+            if (!baseSeed) {
+                console.error("Nem található alap mag információ az eladni kívánt virághoz:", flower.name);
+                return;
+            }
+
+            const basePrice = baseSeed.price;
+
+            let multiplier = 1;
+
+            if (flower.growth >= 90 && flower.health >= 80) {
+                multiplier = 3;
+            } else if (flower.growth >= 80 && flower.health >= 60) {
+                multiplier = 2;
+            } else if (flower.growth >= 50) {
+                multiplier = 0;
+            }
+            const value = Math.floor(basePrice * multiplier);
+            money += value;
+            list.splice(index, 1);
+            xp += 20;
             checkLevelUp();
             updateStats();
             renderGarden();
         }
+
 
         function checkLevelUp() {
             while (xp >= 100) {
@@ -409,21 +568,49 @@
                 level++;
                 money += 50;
                 alert("🎉 Szintet léptél! Új szint: " + level);
+                renderDarkModeButton();
+                renderShop();
             }
+            updateStats();
         }
 
-        function updateStats() {
-            document.getElementById('xp').textContent = xp;
-            document.getElementById('level').textContent = level;
-            document.getElementById('money').textContent = money;
-            document.getElementById('fertilizers').textContent = fertilizers;
+        function updateFlowerHealth() {
+            const now = Date.now();
+            const flowerLists = [flowersLight, flowersDark];
+
+            flowerLists.forEach(list => {
+                list.forEach(flower => {
+                    const lastCareTime = Math.max(flower.lastWatered, flower.lastFertilized);
+                    const timeSinceLastCare = now - lastCareTime;
+
+                    const decayInterval = 30000;
+                    const healthLossPerInterval = 10;
+
+                    const intervalsPassed = Math.floor(timeSinceLastCare / decayInterval);
+
+                    const calculatedHealth = 100 - (intervalsPassed * healthLossPerInterval);
+
+                    if (calculatedHealth < flower.health) {
+                        flower.health = Math.max(0, calculatedHealth);
+                    }
+
+                    if (flower.health === 0 && darkMode && illegalSeeds.some(s => s.name.includes(flower.name))) {
+                        console.log(`${flower.name} elhervadt! Készülj fel egy esetleges razziára (funkció még nincs implementálva)!`);
+                    }
+                });
+            });
+
+            renderGarden();
+        }
+
+        setInterval(updateFlowerHealth, 1000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            renderShop();
+            renderGarden();
             renderDarkModeButton();
-        }
-
-     
-        renderShop();
-        renderGarden();
-        renderDarkModeButton();
+        });
     </script>
 </body>
 </html>
